@@ -1,0 +1,613 @@
+openapi: 3.0.0
+
+components:
+  $ref: './schema.swagger.yaml#/components/schemas'
+
+/api/authentications:
+  post:
+    tags:
+      - Authentications
+    summary: Login
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Login'
+    responses:
+      201:
+        description: Success
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+                - message
+                - data
+              properties:
+                status:
+                  type: string
+                message:
+                  type: string
+                data:
+                  $ref: '#/components/schemas/Authentication'
+      400:
+        description: Bad request
+      401:
+        description: Authentication error
+      500:
+        description: Internal server error
+
+  put:
+    tags:
+      - Authentications
+    summary: Update access token
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - refreshToken
+            properties:
+              refreshToken:
+                type: string
+    responses:
+      200:
+        description: Success
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+                - message
+                - data
+              properties:
+                status:
+                  type: string
+                message:
+                  type: string
+                data:
+                  type: object
+                  required:
+                    - accessToken
+                  properties:
+                    accessToken:
+                      type: string
+      400:
+        description: Bad request
+      500:
+        description: Internal server error
+
+  delete:
+    tags:
+      - Authentications
+    summary: Logout and delete refresh token
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - refreshToken
+            properties:
+              refreshToken:
+                type: string
+    responses:
+      200:
+        description: Success
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+                - message
+              properties:
+                status:
+                  type: string
+                message:
+                  type: string
+      400:
+        description: Bad request
+      500:
+        description: Internal server error
+
+/api/collaborations:
+  post:
+    tags:
+      - Collaborations
+    summary: Add collaboration on one note with other user
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CollaborationInput'
+    responses:
+      201:
+        description: Success
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+                - message
+                - data
+              properties:
+                status:
+                  type: string
+                message:
+                  type: string
+                data:
+                  $ref: '#/components/schemas/Collaboration'
+      400:
+        description: Bad request
+      401:
+        description: Authentication error
+      500:
+        description: Internal server error
+
+  delete:
+    tags:
+      - Collaborations
+    summary: Add collaboration on one note with other user
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CollaborationInput'
+    responses:
+      200:
+        description: Success
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+                - message
+              properties:
+                status:
+                  type: string
+                message:
+                  type: string
+      400:
+        description: Bad request
+      401:
+        description: Authentication error
+      500:
+        description: Internal server error
+
+/api/exports/notes:
+  post:
+    tags:
+      - Exports
+    summary: Export notes as JSON and send to target email with queue
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - targetEmail
+            properties:
+              targetEmail:
+                type: string
+    responses:
+      201:
+        description: Success
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+                - message
+              properties:
+                status:
+                  type: string
+                message:
+                  type: string
+      400:
+        description: Bad request
+      401:
+        description: Authentication error
+      500:
+        description: Internal server error
+
+/api/notes:
+  get:
+    tags:
+      - Notes
+    summary: Get all user's notes include its collaboration
+    security:
+      - bearerAuth: []
+    responses:
+      200:
+        description: Success
+        headers:
+          X-Data-Source:
+            description: Data source information
+            schema:
+              type: string
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+                - message
+                - data
+              properties:
+                status:
+                  type: string
+                message:
+                  type: string
+                data:
+                  $ref: '#/components/schemas/Note'
+      400:
+        description: Bad request
+      401:
+        description: Authentication error
+      500:
+        description: Internal server error
+
+  post:
+    tags:
+      - Notes
+    summary: Add note
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/NoteInput'
+    responses:
+      201:
+        description: Success
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+                - message
+                - data
+              properties:
+                status:
+                  type: string
+                message:
+                  type: string
+                data:
+                  type: object
+                  required:
+                    - addedNote
+                  properties:
+                    addedNote:
+                      $ref: '#/components/schemas/Note'
+      400:
+        description: Bad request
+      401:
+        description: Authentication error
+      500:
+        description: Internal server error
+
+/api/notes/{id}:
+  get:
+    tags:
+      - Notes
+    summary: Get note by id (only user's and collaboration's note)
+    parameters:
+      - in: path
+        name: id
+        description: Note Id
+        required: true
+        schema:
+          type: string
+    security:
+      - bearerAuth: []
+    responses:
+      200:
+        description: Success
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+                - message
+                - data
+              properties:
+                status:
+                  type: string
+                message:
+                  type: string
+                data:
+                  type: object
+                  required:
+                    - note
+                  properties:
+                    note:
+                      $ref: '#/components/schemas/Note'
+      400:
+        description: Bad request
+      401:
+        description: Authentication error
+      403:
+        description: Authorization error / Forbidden
+      500:
+        description: Internal server error
+
+  put:
+    tags:
+      - Notes
+    summary: Update note by id (only user's and collaboration's note)
+    parameters:
+      - in: path
+        name: id
+        description: Note Id
+        required: true
+        schema:
+          type: string
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/NoteInput'
+    responses:
+      200:
+        description: Success
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+                - message
+              properties:
+                status:
+                  type: string
+                message:
+                  type: string
+      400:
+        description: Bad request
+      401:
+        description: Authentication error
+      403:
+        description: Authorization error / Forbidden
+      500:
+        description: Internal server error
+
+  delete:
+    tags:
+      - Notes
+    summary: Delete note by id (only user's note)
+    parameters:
+      - in: path
+        name: id
+        description: Note Id
+        required: true
+        schema:
+          type: string
+    security:
+      - bearerAuth: []
+    responses:
+      200:
+        description: Success
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+                - message
+              properties:
+                status:
+                  type: string
+                message:
+                  type: string
+      400:
+        description: Bad request
+      401:
+        description: Authentication error
+      403:
+        description: Authorization error / Forbidden
+      500:
+        description: Internal server error
+
+/api/upload/images:
+  post:
+    tags:
+      - Upload
+    summary: Upload single image
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        multipart/form-data:
+          schema:
+            type: object
+            properties:
+              image:
+                type: string
+                format: binary
+    responses:
+      201:
+        description: Success
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+                - message
+              properties:
+                status:
+                  type: string
+                message:
+                  type: string
+      400:
+        description: Bad request
+      401:
+        description: Authentication error
+      500:
+        description: Internal server error
+
+/api/upload/{proxy+}:
+  get:
+    tags:
+      - Upload
+    summary: Get single image by file path name
+    parameters:
+      - in: path
+        name: proxy
+        required: true
+        schema:
+          type: string
+    responses:
+      200:
+        description: Success
+        content:
+          image/*:
+            schema:
+              type: string
+              format: binary
+      400:
+        description: Bad request
+      401:
+        description: Authentication error
+      500:
+        description: Internal server error
+
+/api/users:
+  get:
+    tags:
+      - Users
+    summary: Search users by find username
+    parameters:
+      - in: query
+        name: username
+        schema:
+          type: string
+    responses:
+      200:
+        description: Success
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+                - data
+              properties:
+                status:
+                  type: string
+                data:
+                  type: object
+                  required:
+                    - users
+                  properties:
+                    users:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/UserWithoutPassword'
+      400:
+        description: Bad request
+      404:
+        description: Not found
+      500:
+        description: Internal server error
+
+  post:
+    tags:
+      - Users
+    summary: Register a user
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/User'
+    responses:
+      201:
+        description: Success
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+                - data
+              properties:
+                status:
+                  type: string
+                data:
+                  type: object
+                  required:
+                    - addedUser
+                  properties:
+                    addedUser:
+                      $ref: '#/components/schemas/User'
+      400:
+        description: Bad request
+      500:
+        description: Internal server error
+
+/api/users/{id}:
+  get:
+    tags:
+      - Users
+    summary: Get user by id
+    parameters:
+      - in: path
+        name: id
+        description: User Id
+        required: true
+        schema:
+          type: string
+    responses:
+      200:
+        description: Success
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+                - data
+              properties:
+                status:
+                  type: string
+                data:
+                  type: object
+                  required:
+                    - user
+                  properties:
+                    user:
+                      $ref: '#/components/schemas/UserWithoutPassword'
+      400:
+        description: Bad request
+      404:
+        description: Not found
+      500:
+        description: Internal server error

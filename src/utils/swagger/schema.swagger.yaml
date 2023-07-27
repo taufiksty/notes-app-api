@@ -1,0 +1,129 @@
+openapi: 3.0.0
+
+components:
+  schemas:
+    Authentication:
+      type: object
+      required:
+        - accessToken
+        - refreshToken
+      properties:
+        accessToken: 
+          type: string
+        refreshToken:
+          type: string
+
+    Collaboration:
+      type: object
+      required:
+        - id
+        - noteId
+        - userId
+      properties:
+        id:
+          type: string
+        noteId:
+          type: string
+        userId: 
+          type: string
+
+    CollaborationInput:
+      type: object
+      required:
+        - noteId
+        - userId
+      properties:
+        noteId:
+          type: string
+        userId: 
+          type: string
+
+    Login:
+      type: object
+      required: 
+        - username
+        - password
+      properties:
+        username: 
+          type: string
+        password:
+          type: string
+
+    Note:
+      type: object
+      required: 
+        - id
+        - title
+        - body
+        - tags
+        - createdAt
+        - updatedAt
+        - owner
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        body:
+          type: string
+        tags: 
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        owner: 
+          type: string
+
+    NoteInput:
+      type: object
+      required:
+        - title
+        - body
+        - tags
+      properties:
+        title:
+          type: string
+        body:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+
+    User:
+      type: object
+      required:
+        - id
+        - username
+        - password
+        - fullname
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        password:
+          type: string
+        fullname:
+          type: string
+
+    UserWithoutPassword:
+      type: object
+      required:
+        - id
+        - username
+        - fullname
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        fullname:
+          type: string
+
+
