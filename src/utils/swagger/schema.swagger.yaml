@@ -112,6 +112,20 @@ components:
         fullname:
           type: string
 
+    UserRegistration:
+      type: object
+      required:
+        - username
+        - password
+        - fullname
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+        fullname:
+          type: string
+
     UserWithoutPassword:
       type: object
       required:
