@@ -3,7 +3,7 @@ import asyncWrapper from '../middleware/async';
 import RequestWithAuth from '../types/request-with-auth';
 import CollaborationValidator from '../validators/collaborations';
 import { verifyNoteOwner } from '../services/postgres/notes-service';
-import CacheService from '../services/redis/cache-service';
+// import CacheService from '../services/redis/cache-service';
 
 import {
 	addCollaboration,
@@ -15,7 +15,7 @@ interface Payload {
 	userId: string;
 }
 
-const cacheNotes = new CacheService();
+// const cacheNotes = new CacheService();
 
 const postCollaborationHandler = asyncWrapper(
 	async (req: RequestWithAuth, res: Response) => {
@@ -28,7 +28,7 @@ const postCollaborationHandler = asyncWrapper(
 
         const collaboration = await addCollaboration({ noteId, userId });
         
-        await cacheNotes.delete(`notes:${userId}`);
+        // await cacheNotes.delete(`notes:${userId}`);
 
 		res.status(201).json({
 			status: 'success',
@@ -49,7 +49,7 @@ const deleteCollaborationHandler = asyncWrapper(
 
         await deleteCollaboration({ noteId, userId });
         
-        await cacheNotes.delete(`notes:${userId}`);
+        // await cacheNotes.delete(`notes:${userId}`);
 
 		res.json({ status: 'success', message: 'Kolaborasi berhasil dihapus' });
 	},

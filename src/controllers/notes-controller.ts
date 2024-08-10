@@ -1,7 +1,7 @@
 import { Response } from 'express';
 import asyncWrapper from '../middleware/async';
 import RequestWithAuth from '../types/request-with-auth';
-import CacheService from '../services/redis/cache-service';
+// import CacheService from '../services/redis/cache-service';
 import NotesValidator from '../validators/notes';
 import {
 	addNote,
@@ -19,7 +19,7 @@ interface Payload {
 	tags: string[];
 }
 
-const cacheNotes = new CacheService();
+// const cacheNotes = new CacheService();
 
 const deleteNoteByIdHandler = asyncWrapper(
 	async (req: RequestWithAuth, res: Response) => {
@@ -30,7 +30,7 @@ const deleteNoteByIdHandler = asyncWrapper(
 
 		await deleteNoteById({ id });
 
-		await cacheNotes.delete(`notes:${userId}`);
+		// await cacheNotes.delete(`notes:${userId}`);
 
 		res.json({ status: 'success', message: 'Catatan berhasil dihapus' });
 	},
@@ -52,19 +52,19 @@ const getNotesHandler = asyncWrapper(
 	async (req: RequestWithAuth, res: Response) => {
 		const userId = req.auth?.id;
 
-		try {
-			const notes: string = await cacheNotes.get(`notes:${userId}`);
-			res.setHeader('X-Data-Source', 'cache');
+		// try {
+		// 	const notes: string = await cacheNotes.get(`notes:${userId}`);
+		// 	res.setHeader('X-Data-Source', 'cache');
 
-			res.json({ status: 'success', data: { notes: JSON.parse(notes) } });
-		} catch (error) {
+		// 	res.json({ status: 'success', data: { notes: JSON.parse(notes) } });
+		// } catch (error) {
 			const notes: any = await getNotes({ owner: userId as string });
             res.setHeader('X-Data-Source', 'database');
             
-			await cacheNotes.set(`notes:${userId}`, JSON.stringify(notes));
+			// await cacheNotes.set(`notes:${userId}`, JSON.stringify(notes));
 			
             res.json({ status: 'success', data: { notes } });
-		}
+		// }
 	},
 );
 
@@ -82,7 +82,7 @@ const postNoteHandler = asyncWrapper(
 			owner: userId as string,
 		});
 
-		await cacheNotes.delete(`notes:${userId}`);
+		// await cacheNotes.delete(`notes:${userId}`);
 
 		res.status(201).json({
 			status: 'success',
@@ -102,7 +102,7 @@ const putNoteByIdHandler = asyncWrapper(
 
 		await editNoteById({ id, title, body, tags, owner: userId as string });
 
-		await cacheNotes.delete(`notes:${userId}`);
+		// await cacheNotes.delete(`notes:${userId}`);
 
 		res.json({ status: 'success', message: 'Catatan berhasil diperbarui' });
 	},
